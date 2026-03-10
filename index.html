@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>💎 水晶王国 · 独角兽拯救记</title>
 <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+KuaiLe&family=ZCOOL+XiaoWei&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -86,59 +86,10 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
 /* ============================================================
    PHONE FRAME — cartoon pastel device
 ============================================================ */
-#phone-frame {
-  position:relative; width:390px; height:844px; flex-shrink:0;
-  border-radius:54px;
-  background: #fff0fa;
-  border: 5px solid var(--outline);
-  box-shadow:
-    8px 8px 0 var(--outline),
-    0 20px 60px rgba(61,42,94,0.25);
-  overflow:hidden;
-}
-#phone-frame::before {
-  content:'';
-  position:absolute; left:-18px; top:118px;
-  width:6px; height:32px;
-  background: var(--outline);
-  border-radius:4px 0 0 4px;
-  box-shadow: 0 46px 0 var(--outline), 0 84px 0 var(--outline);
-  z-index:200;
-}
-#phone-frame::after {
-  content:'';
-  position:absolute; right:-18px; top:158px;
-  width:6px; height:58px;
-  background: var(--outline);
-  border-radius:0 4px 4px 0;
-  z-index:200;
-}
-.phone-notch {
-  position:absolute; top:12px; left:50%; transform:translateX(-50%);
-  width:110px; height:30px;
-  background: var(--outline);
-  border-radius:20px;
-  z-index:200;
-  display:flex; align-items:center; justify-content:center;
-}
-.phone-notch::after {
-  content:'';
-  width:9px; height:9px; border-radius:50%;
-  background: #1a0a3a;
-  box-shadow: inset 0 0 3px rgba(0,0,0,0.6);
-}
+/* Full mobile layout */
 .phone-screen {
-  position:absolute; inset:0;
+  position:fixed; inset:0;
   overflow:hidden;
-  border-radius:50px;
-}
-@media (max-height:900px) { #phone-frame { transform:scale(0.92); } }
-@media (max-height:800px) { #phone-frame { transform:scale(0.82); } }
-@media (max-height:700px) { #phone-frame { transform:scale(0.72); } }
-@media (max-width:440px)  {
-  #phone-frame { width:100vw; height:100vh; border-radius:0; border:none; box-shadow:none; }
-  #phone-frame::before,#phone-frame::after,.phone-notch { display:none; }
-  .phone-screen { border-radius:0; }
 }
 
 /* ============================================================
@@ -331,7 +282,7 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
   width:100%; padding:6px 10px 2px;
   display:flex; justify-content:space-between; align-items:center;
   position:relative; z-index:2;
-  margin-top:36px;
+  margin-top:max(36px, env(safe-area-inset-top, 36px));
   gap:6px;
 }
 .main-topbar-title {
@@ -612,7 +563,7 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
 .subscreen-header {
   width:100%; padding:12px 14px 8px;
   display:flex; align-items:center; gap:10px;
-  flex-shrink:0; z-index:2; margin-top:36px;
+  flex-shrink:0; z-index:2; margin-top:max(36px, env(safe-area-inset-top, 36px));
 }
 .back-btn {
   height:34px; padding:0 12px;
@@ -730,7 +681,7 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
 .adv-header {
   width:100%; padding:10px 14px 4px;
   display:flex; align-items:center; gap:10px;
-  flex-shrink:0; margin-top:36px;
+  flex-shrink:0; margin-top:max(36px, env(safe-area-inset-top, 36px));
 }
 .adv-title {
   font-family:var(--font-title); font-size:clamp(20px,5.5vw,26px); /* ×2 */
@@ -946,7 +897,7 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
 .subscreen-header {
   width:100%; padding:12px 14px 8px;
   display:flex; align-items:center; gap:10px;
-  flex-shrink:0; z-index:2; margin-top:36px;
+  flex-shrink:0; z-index:2; margin-top:max(36px, env(safe-area-inset-top, 36px));
 }
 .back-btn {
   height:34px; padding:0 12px;
@@ -1069,7 +1020,7 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
 .adv-header {
   width:100%; padding:12px 14px 6px;
   display:flex; align-items:center; gap:10px;
-  flex-shrink:0; margin-top:36px;
+  flex-shrink:0; margin-top:max(36px, env(safe-area-inset-top, 36px));
 }
 .adv-title {
   font-family:var(--font-title); font-size:clamp(18px,5vw,23px);
@@ -1176,7 +1127,7 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
   width:100%; padding:10px 14px 6px;
   display:flex; align-items:center; gap:9px;
   position:relative; z-index:2; flex-shrink:0;
-  margin-top:36px;
+  margin-top:max(36px, env(safe-area-inset-top, 36px));
 }
 .chall-realm-name {
   font-family:var(--font-body); font-size:13px; font-weight:bold;
@@ -1406,8 +1357,6 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
 </head>
 <body>
 
-<div id="phone-frame">
-<div class="phone-notch"></div>
 <div class="phone-screen">
 
 <div id="magic-bg"></div>
@@ -2204,9 +2153,8 @@ function loadState() {
   const ctx = canvas.getContext('2d');
   let stars = [];
   function resize() {
-    const frame = document.getElementById('phone-frame');
-    canvas.width = frame ? frame.offsetWidth : 390;
-    canvas.height = frame ? frame.offsetHeight : 844;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   }
   function makeStars() {
     stars = [];
@@ -3088,6 +3036,5 @@ window.onload = function() {
 };
 </script>
 </div><!-- .phone-screen -->
-</div><!-- #phone-frame -->
 </body>
 </html>
