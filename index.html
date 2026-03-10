@@ -1166,6 +1166,176 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
 }
 
 /* ============================================================
+   BATTLE SCREEN — 地狱之塔对战
+============================================================ */
+#screen-battle {
+  justify-content:flex-start;
+  background:linear-gradient(180deg,#0d0018 0%,#2d0a0a 50%,#0d0010 100%);
+  overflow:hidden;
+}
+.battle-header {
+  width:100%; padding:6px 12px 4px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:relative; z-index:2; flex-shrink:0;
+  margin-top:max(36px, env(safe-area-inset-top, 36px));
+}
+.battle-title {
+  font-family:var(--font-title); font-size:16px;
+  color:#ff9090; letter-spacing:1px;
+  text-shadow:0 0 16px rgba(239,68,68,0.7);
+}
+
+/* ── BOSS 区域 ── */
+.battle-boss-area {
+  width:100%; flex-shrink:0;
+  display:flex; flex-direction:column; align-items:center;
+  padding:4px 0 10px; position:relative; z-index:2;
+}
+.battle-boss-halo {
+  position:absolute; width:140px; height:140px; border-radius:50%;
+  background:radial-gradient(circle, rgba(239,68,68,0.35) 0%, transparent 70%);
+  top:0; animation:haloPulse 2.5s ease-in-out infinite;
+  pointer-events:none;
+}
+@keyframes haloPulse {
+  0%,100%{transform:scale(1);opacity:0.7;}
+  50%{transform:scale(1.3);opacity:1;}
+}
+.battle-boss-icon {
+  font-size:80px; line-height:1; position:relative; z-index:2;
+  animation:bossFloat 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 20px rgba(239,68,68,0.9));
+  transition:filter 0.5s;
+}
+@keyframes bossFloat {
+  0%,100%{transform:translateY(0) rotate(-4deg) scale(1);}
+  40%{transform:translateY(-10px) rotate(4deg) scale(1.06);}
+  70%{transform:translateY(-4px) rotate(-1deg) scale(1.02);}
+}
+.battle-boss-icon.hurt {
+  filter:drop-shadow(0 0 30px rgba(255,255,100,1)) brightness(2) !important;
+}
+.battle-boss-icon.dead {
+  filter:grayscale(1) opacity(0.35) !important;
+  animation:none !important;
+}
+.battle-boss-name {
+  font-family:var(--font-title); font-size:18px; font-weight:bold;
+  color:#ffb0b0; margin:6px 0 10px;
+  text-shadow:0 0 10px rgba(239,68,68,0.6);
+}
+
+/* ── HP 条 ── */
+.battle-hp-bar-wrap { width:100%; }
+.battle-hp-label { font-size:11px; font-weight:bold; color:rgba(255,255,255,0.5); }
+.battle-hp-track {
+  width:100%; height:14px;
+  background:rgba(0,0,0,0.5);
+  border-radius:7px; border:1.5px solid rgba(255,255,255,0.1);
+  overflow:hidden;
+}
+.battle-hp-fill { height:100%; border-radius:6px; transition:width 0.6s cubic-bezier(.34,1.2,.64,1); }
+.boss-hp-fill   { background:linear-gradient(90deg,#7f1d1d,#ef4444,#ff8c3a); }
+.princess-hp-fill { background:linear-gradient(90deg,#831843,#ff5fa0,#c85af5); }
+.battle-hp-num  { font-family:var(--font-num); font-size:11px; color:rgba(255,255,255,0.45); }
+
+/* ── 信息条 ── */
+.battle-info-strip {
+  width:100%; padding:6px 14px; flex-shrink:0;
+  display:flex; flex-direction:column; gap:7px;
+  position:relative; z-index:2;
+}
+.battle-princess-mini { width:100%; }
+.battle-log-box {
+  padding:9px 14px;
+  background:rgba(255,255,255,0.05);
+  border:1.5px solid rgba(255,255,255,0.1);
+  border-radius:12px;
+  font-size:13px; color:rgba(255,255,255,0.88);
+  line-height:1.5; min-height:40px; text-align:center;
+  transition:color 0.3s;
+}
+
+/* ── 回合条 ── */
+.battle-turn-bar {
+  width:100%; text-align:center; flex-shrink:0;
+  padding:2px 0 3px; position:relative; z-index:2;
+}
+#battle-turn-text {
+  display:inline-block; padding:3px 16px;
+  border-radius:var(--r-pill);
+  background:rgba(255,255,255,0.07);
+  border:1.5px solid rgba(255,255,255,0.12);
+  font-size:12px; font-weight:bold; color:rgba(255,255,255,0.5);
+  letter-spacing:1px;
+}
+#battle-turn-text.player-turn {
+  color:#ffda3a; border-color:rgba(255,218,58,0.4);
+  background:rgba(255,218,58,0.08);
+  text-shadow:0 0 8px rgba(255,218,58,0.5);
+}
+#battle-turn-text.boss-turn {
+  color:#ff9090; border-color:rgba(239,68,68,0.4);
+  background:rgba(239,68,68,0.08);
+}
+
+/* ── 行动区 ── */
+.battle-actions-wrap {
+  flex:1; width:100%; overflow-y:auto; padding:4px 12px 10px;
+  position:relative; z-index:2;
+  scrollbar-width:none;
+}
+.battle-actions-wrap::-webkit-scrollbar { display:none; }
+.battle-section-title {
+  font-size:11px; font-weight:bold; color:rgba(255,255,255,0.3);
+  text-align:center; margin-bottom:6px; letter-spacing:2px;
+}
+.battle-actions { display:flex; flex-direction:column; gap:6px; }
+
+/* ── 行动按钮 ── */
+.battle-btn {
+  width:100%; padding:9px 12px;
+  display:flex; align-items:center; gap:10px;
+  border-radius:14px; border:2px solid rgba(255,255,255,0.12);
+  background:rgba(255,255,255,0.05);
+  color:#fff; text-align:left; cursor:pointer;
+  transition:transform 0.12s, background 0.12s, opacity 0.2s;
+  flex-shrink:0;
+}
+.battle-btn:active { transform:scale(0.97); background:rgba(255,255,255,0.12); }
+.battle-btn.used-up { opacity:0.25; pointer-events:none; }
+.battle-btn.boss-turn-lock { opacity:0.4; pointer-events:none; }
+.battle-btn .bb-icon { font-size:26px; flex-shrink:0; line-height:1; }
+.battle-btn .bb-body  { flex:1; min-width:0; }
+.battle-btn .bb-name  { font-size:13px; font-weight:bold; color:#fff; }
+.battle-btn .bb-desc  { font-size:10px; color:rgba(255,255,255,0.4); margin-top:1px; }
+.battle-btn .bb-power {
+  font-family:var(--font-num); font-size:18px; font-weight:900; flex-shrink:0;
+  min-width:44px; text-align:right;
+}
+/* Type colours */
+.battle-btn.t-weapon { border-color:rgba(255,218,58,0.35);  background:rgba(255,218,58,0.06); }
+.battle-btn.t-weapon .bb-power { color:#ffda3a; text-shadow:0 0 8px rgba(255,218,58,0.7); }
+.battle-btn.t-gem    { border-color:rgba(58,176,255,0.35);  background:rgba(58,176,255,0.06); }
+.battle-btn.t-gem .bb-power    { color:#7dd3fc; text-shadow:0 0 8px rgba(58,176,255,0.7); }
+.battle-btn.t-card   { border-color:rgba(200,90,245,0.35);  background:rgba(200,90,245,0.06); }
+.battle-btn.t-card .bb-power   { color:#e879f9; text-shadow:0 0 8px rgba(200,90,245,0.7); }
+.battle-btn.t-item   { border-color:rgba(52,211,153,0.35);  background:rgba(52,211,153,0.06); }
+.battle-btn.t-item .bb-power   { color:#6ee7b7; text-shadow:0 0 8px rgba(52,211,153,0.7); }
+
+/* ── 伤害飘字 ── */
+@keyframes floatUp {
+  0%  { opacity:1; transform:translateY(0) scale(1); }
+  60% { opacity:1; transform:translateY(-50px) scale(1.4); }
+  100%{ opacity:0; transform:translateY(-90px) scale(0.9); }
+}
+.dmg-float {
+  position:fixed; font-family:var(--font-num); font-weight:900;
+  font-size:32px; pointer-events:none; z-index:999; letter-spacing:-1px;
+  animation:floatUp 1s ease-out forwards;
+}
+
+/* ============================================================
    CHALLENGE SCREEN
 ============================================================ */
 #screen-challenge { overflow:hidden; }
@@ -1616,8 +1786,87 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
 </div>
 
 <!-- ================================================
-     SCREEN: CHALLENGE
+     SCREEN: BATTLE (地狱之塔专属对战)
 ================================================ -->
+<div id="screen-battle" class="screen">
+
+  <!-- 背景粒子效果 -->
+  <canvas id="battle-particles" style="position:absolute;inset:0;z-index:0;pointer-events:none"></canvas>
+
+  <!-- 顶部返回栏 -->
+  <div class="battle-header">
+    <button class="back-btn" style="border-color:rgba(255,100,100,0.6);color:#ffaaaa;background:rgba(255,0,0,0.1)" onclick="confirmBattleQuit()">返回</button>
+    <div class="battle-title">👹 地狱之塔 · 最终决战</div>
+    <div style="width:48px"></div>
+  </div>
+
+  <!-- BOSS区域 -->
+  <div class="battle-boss-area">
+    <div class="battle-boss-halo" id="battle-boss-halo"></div>
+    <div class="battle-boss-icon" id="battle-boss-icon">👹</div>
+    <div class="battle-boss-name" id="battle-boss-name">地狱三角犬</div>
+    <div class="battle-hp-bar-wrap" style="padding:0 16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span class="battle-hp-label">👹 BOSS血量</span>
+        <span class="battle-hp-num" id="boss-hp-num">500 / 500</span>
+      </div>
+      <div class="battle-hp-track">
+        <div class="battle-hp-fill boss-hp-fill" id="boss-hp-fill" style="width:100%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 战斗信息条 -->
+  <div class="battle-info-strip">
+    <div class="battle-princess-mini">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span class="battle-hp-label">💗 公主血量</span>
+        <span class="battle-hp-num" id="princess-hp-num">200 / 200</span>
+      </div>
+      <div class="battle-hp-track">
+        <div class="battle-hp-fill princess-hp-fill" id="princess-hp-fill" style="width:100%"></div>
+      </div>
+    </div>
+    <div class="battle-log-box" id="battle-log">准备战斗！选择下方行动攻击BOSS！</div>
+  </div>
+
+  <!-- 回合提示 -->
+  <div class="battle-turn-bar" id="battle-turn-bar">
+    <span id="battle-turn-text">⚡ 你的回合</span>
+  </div>
+
+  <!-- 行动区 -->
+  <div class="battle-actions-wrap">
+    <div class="battle-section-title" id="battle-section-title">选择攻击方式</div>
+    <div class="battle-actions" id="battle-actions"></div>
+  </div>
+
+</div>
+
+<!-- Battle quit confirm -->
+<div class="simple-alert-overlay" id="battle-quit-confirm">
+  <div class="simple-alert-box">
+    <span class="simple-alert-icon">🚪</span>
+    <div class="simple-alert-msg">退出决战？当前进度将丢失。</div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:4px">
+      <button class="simple-alert-btn" style="background:linear-gradient(135deg,#ff5fa0,#c85af5)" onclick="doBattleQuit()">退出</button>
+      <button class="simple-alert-btn" style="background:linear-gradient(135deg,#3ab0ff,#3cdb7a)" onclick="document.getElementById('battle-quit-confirm').classList.remove('show')">继续战斗</button>
+    </div>
+  </div>
+</div>
+
+<!-- Battle quiz confirm -->
+<div class="simple-alert-overlay" id="battle-quiz-overlay" style="align-items:center;padding:0 16px">
+  <div class="simple-alert-box" style="width:100%;max-width:360px;padding:20px 18px">
+    <div id="bq-type-badge" style="display:inline-block;padding:2px 10px;border-radius:99px;font-size:11px;font-weight:bold;margin-bottom:10px;border:2px solid"></div>
+    <div id="bq-art" style="font-size:40px;margin-bottom:6px"></div>
+    <div id="bq-text" style="font-size:14px;line-height:1.6;color:var(--c-text);margin-bottom:14px;text-align:left"></div>
+    <div id="bq-opts" style="display:flex;flex-direction:column;gap:8px"></div>
+    <div id="bq-feedback" style="margin-top:10px;font-size:13px;font-weight:bold;text-align:center;min-height:20px"></div>
+  </div>
+</div>
+
+
 <div id="screen-challenge" class="screen">
   <div class="challenge-bg" id="challenge-bg"></div>
   <div class="challenge-header">
@@ -2913,15 +3162,413 @@ let CHALLENGE = {
   wrongOnThisQ: false,
 };
 
+/* ============================================================
+   BATTLE SYSTEM — 地狱之塔专属对战
+============================================================ */
+let BATTLE = {
+  bossHpMax:0, bossHp:0,
+  prinHpMax:0,  prinHp:0,
+  usedActions:new Set(),
+  turn:'player',   // 'player' | 'boss' | 'over'
+  baseAtk:0, baseDef:0,
+};
+
+/* ─── 入口：从 startRealm 跳转过来 ─── */
+function startBattle() {
+  const boss = BOSS_CARDS.find(b => b.id === 'b10');
+
+  // 计算公主当前总战力
+  let atk = 25, def = 15;
+  STATE.bag.forEach(id => {
+    const eq = EQUIPMENT.find(e => e.id === id);
+    if (eq) { atk += eq.atk; def += eq.def; }
+  });
+  // 每持有卡牌给少量加成
+  Object.values(STATE.cards).forEach(d => { if (d?.count > 0) { atk += 5; def += 3; } });
+
+  BATTLE.baseAtk = atk;
+  BATTLE.baseDef = def;
+
+  // Boss HP 按公主战力缩放（保证有挑战性）
+  const bossHp  = Math.round((atk + def) * 4.2 + 200);
+  const prinHp  = Math.round(def * 3 + 100);
+
+  Object.assign(BATTLE, {
+    bossHpMax:bossHp, bossHp:bossHp,
+    prinHpMax:prinHp, prinHp:prinHp,
+    usedActions:new Set(),
+    turn:'player',
+  });
+
+  // 初始化界面
+  document.getElementById('battle-boss-icon').textContent = boss.icon;
+  document.getElementById('battle-boss-icon').className   = 'battle-boss-icon';
+  document.getElementById('battle-boss-name').textContent = boss.name;
+  battleUpdateHP();
+  battleSetLog('战斗开始！👹 地狱三角犬发出可怕的吼叫……选择攻击方式，拯救独角兽！🦄');
+  battleSetTurn('player');
+  showScreen('battle');
+  battleRenderActions();
+  battleStartParticles();
+}
+
+/* ─── HP 更新 ─── */
+function battleUpdateHP() {
+  const br = Math.max(0, BATTLE.bossHp / BATTLE.bossHpMax);
+  const pr = Math.max(0, BATTLE.prinHp  / BATTLE.prinHpMax);
+  document.getElementById('boss-hp-fill').style.width    = (br*100)+'%';
+  document.getElementById('princess-hp-fill').style.width = (pr*100)+'%';
+  document.getElementById('boss-hp-num').textContent     = Math.max(0,BATTLE.bossHp)+' / '+BATTLE.bossHpMax;
+  document.getElementById('princess-hp-num').textContent = Math.max(0,BATTLE.prinHp)+' / '+BATTLE.prinHpMax;
+  // HP 颜色变化
+  const bfill = document.getElementById('boss-hp-fill');
+  if (br < 0.25) bfill.style.background='linear-gradient(90deg,#4a0000,#ef4444)';
+  else if (br < 0.5) bfill.style.background='linear-gradient(90deg,#7f1d1d,#ef4444,#fbbf24)';
+  else bfill.style.background='linear-gradient(90deg,#7f1d1d,#ef4444,#ff8c3a)';
+}
+
+/* ─── 回合提示 ─── */
+function battleSetTurn(who) {
+  BATTLE.turn = who;
+  const el = document.getElementById('battle-turn-text');
+  if (who === 'player') {
+    el.textContent = '⚡ 你的回合 — 出招！';
+    el.className = 'player-turn';
+  } else if (who === 'boss') {
+    el.textContent = '💀 BOSS的回合……';
+    el.className = 'boss-turn';
+  } else {
+    el.textContent = '';
+    el.className = '';
+  }
+}
+
+/* ─── 日志 ─── */
+function battleSetLog(msg, color) {
+  const el = document.getElementById('battle-log');
+  el.textContent = msg;
+  el.style.color = color || 'rgba(255,255,255,0.88)';
+}
+
+/* ─── 渲染行动按钮 ─── */
+function battleRenderActions() {
+  const container = document.getElementById('battle-actions');
+  container.innerHTML = '';
+  const isPlayerTurn = BATTLE.turn === 'player';
+  const title = document.getElementById('battle-section-title');
+
+  if (BATTLE.turn === 'over') { title.textContent = ''; return; }
+  if (!isPlayerTurn) { title.textContent = 'BOSS 正在行动…'; }
+  else title.textContent = '── 选择攻击方式 ──';
+
+  // ① 武器普攻（无限次）
+  const weapon = WEAPONS.find(w => w.id === STATE.currentWeapon) || WEAPONS[0];
+  const wMin = Math.round(BATTLE.baseAtk * 0.75);
+  const wMax = Math.round(BATTLE.baseAtk * 1.25);
+  makeBattleBtn(container, {
+    type:'weapon', icon:weapon.icon,
+    name:`${weapon.name} 攻击`,
+    desc:`基础攻击 · 可反复使用`,
+    power:`${wMin}~${wMax}`,
+    usable: isPlayerTurn,
+    onClick:() => battleAskQuestion('weapon', weapon.name, BATTLE.baseAtk, 0.75, 1.25),
+  });
+
+  // ② 宝石魔法爆发（一次性）
+  const gem = GEMS.find(g => g.id === STATE.currentGem) || GEMS[0];
+  const gemPow = Math.round(BATTLE.baseAtk * 2.0);
+  makeBattleBtn(container, {
+    type:'gem', icon:gem.icon,
+    name:`${gem.name} · 魔法爆发`,
+    desc: BATTLE.usedActions.has('gem') ? '本场已使用' : `超级魔法 · 仅限一次`,
+    power: BATTLE.usedActions.has('gem') ? '已用' : `${gemPow}`,
+    usable: isPlayerTurn && !BATTLE.usedActions.has('gem'),
+    onClick:() => battleAskQuestion('gem', `${gem.name}魔法`, gemPow, 0.9, 1.1),
+  });
+
+  // ③ BOSS 卡牌（每张一次）
+  const hasCards = Object.entries(STATE.cards).some(([,d]) => d?.count > 0);
+  if (hasCards) {
+    Object.entries(STATE.cards).forEach(([bossId, data]) => {
+      if (!data?.count) return;
+      const card = BOSS_CARDS.find(b => b.id === bossId);
+      if (!card) return;
+      const lv = data.level || 1;
+      const basePow = (card.stats?.[lv-1]?.atk || 80) * 0.55 + BATTLE.baseAtk * 0.3;
+      const pow = Math.round(basePow);
+      const key = `card_${bossId}`;
+      makeBattleBtn(container, {
+        type:'card', icon:card.icon,
+        name:`${card.name} · Lv${lv}`,
+        desc: BATTLE.usedActions.has(key) ? '本场已使用' : `卡牌召唤 · 仅限一次`,
+        power: BATTLE.usedActions.has(key) ? '已用' : `${pow}`,
+        usable: isPlayerTurn && !BATTLE.usedActions.has(key),
+        onClick:() => battleAskQuestion(key, card.name, pow, 0.85, 1.15),
+      });
+    });
+  }
+
+  // ④ 道具（每件一次）
+  STATE.bag.forEach(eqId => {
+    const eq = EQUIPMENT.find(e => e.id === eqId);
+    if (!eq) return;
+    const pow = Math.round(eq.atk * 1.2 + eq.def * 0.4);
+    const key = `item_${eqId}`;
+    makeBattleBtn(container, {
+      type:'item', icon:eq.icon,
+      name:eq.name,
+      desc: BATTLE.usedActions.has(key) ? '本场已使用' : `道具使用 · 仅限一次`,
+      power: BATTLE.usedActions.has(key) ? '已用' : `${pow}`,
+      usable: isPlayerTurn && !BATTLE.usedActions.has(key),
+      onClick:() => battleAskQuestion(key, eq.name, pow, 0.85, 1.15),
+    });
+  });
+}
+
+function makeBattleBtn(container, { type, icon, name, desc, power, usable, onClick }) {
+  const btn = document.createElement('button');
+  btn.className = `battle-btn t-${type}` + (usable ? '' : (power==='已用'?' used-up':' boss-turn-lock'));
+  btn.innerHTML = `
+    <span class="bb-icon">${icon}</span>
+    <div class="bb-body">
+      <div class="bb-name">${name}</div>
+      <div class="bb-desc">${desc}</div>
+    </div>
+    <span class="bb-power">${power}</span>`;
+  if (usable) btn.onclick = onClick;
+  container.appendChild(btn);
+}
+
+/* ─── 玩家出招 ─── */
+/* ─── 问答拦截：点击行动后先答题 ─── */
+let BATTLE_PENDING = null; // 暂存待执行的攻击参数
+
+function battleAskQuestion(actionKey, actionName, baseDmg, minMult, maxMult) {
+  if (BATTLE.turn !== 'player') return;
+
+  // 从通用题库随机抽一题
+  const bank = QUESTION_BANKS.general;
+  const q = bank[Math.floor(Math.random() * bank.length)];
+
+  BATTLE_PENDING = { actionKey, actionName, baseDmg, minMult, maxMult };
+
+  // 填充弹窗内容
+  const badge = document.getElementById('bq-type-badge');
+  badge.textContent = q.type;
+  badge.style.background = q.typeColor + '22';
+  badge.style.color = q.typeColor;
+  badge.style.borderColor = q.typeColor;
+
+  document.getElementById('bq-art').textContent = q.art;
+  document.getElementById('bq-text').innerHTML =
+    q.text.replace(/\n/g,'<br>').replace(/<em>(.*?)<\/em>/g,'<strong style="color:var(--c-purple)">$1</strong>');
+  document.getElementById('bq-feedback').textContent = '';
+
+  const optsEl = document.getElementById('bq-opts');
+  optsEl.innerHTML = '';
+  const prefixes = ['A','B','C','D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.style.cssText = `width:100%;padding:9px 12px;text-align:left;border-radius:12px;
+      border:2.5px solid var(--outline);background:#fff9fe;font-size:13px;
+      display:flex;align-items:center;gap:8px;cursor:pointer;`;
+    btn.innerHTML = `<span style="font-weight:900;color:var(--c-purple);width:16px">${prefixes[i]}</span>${opt}`;
+    btn.onclick = () => handleBattleAnswer(q, i, btn);
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('battle-quiz-overlay').classList.add('show');
+}
+
+function handleBattleAnswer(q, chosen, clickedBtn) {
+  // 禁用所有选项
+  document.querySelectorAll('#bq-opts button').forEach(b => b.style.pointerEvents = 'none');
+
+  const isCreative = q.ans === -1;
+  const correct = isCreative || chosen === q.ans;
+
+  const feedback = document.getElementById('bq-feedback');
+
+  if (correct) {
+    clickedBtn.style.background = '#dcfce7';
+    clickedBtn.style.borderColor = '#22c55e';
+    feedback.style.color = '#16a34a';
+    feedback.textContent = q.ok || '✅ 回答正确！';
+    setTimeout(() => {
+      document.getElementById('battle-quiz-overlay').classList.remove('show');
+      if (BATTLE_PENDING) {
+        const { actionKey, actionName, baseDmg, minMult, maxMult } = BATTLE_PENDING;
+        BATTLE_PENDING = null;
+        doPlayerAttack(actionKey, actionName, baseDmg, minMult, maxMult);
+      }
+    }, 900);
+  } else {
+    clickedBtn.style.background = '#fee2e2';
+    clickedBtn.style.borderColor = '#ef4444';
+    // 标出正确答案
+    const allBtns = document.querySelectorAll('#bq-opts button');
+    allBtns[q.ans].style.background = '#dcfce7';
+    allBtns[q.ans].style.borderColor = '#22c55e';
+    feedback.style.color = '#dc2626';
+    feedback.textContent = `❌ 答错了！${q.no || ''}`;
+    setTimeout(() => {
+      document.getElementById('battle-quiz-overlay').classList.remove('show');
+      BATTLE_PENDING = null;
+      // 答错：BOSS 趁机攻击！
+      battleSetLog('😱 答错了！BOSS趁机发动偷袭！', '#ff9090');
+      battleSetTurn('boss');
+      battleRenderActions();
+      setTimeout(() => doBossAttack(), 800);
+    }, 1500);
+  }
+}
+
+function doPlayerAttack(actionKey, actionName, baseDmg, minMult, maxMult) {
+
+  if (BATTLE.turn !== 'player') return;
+  battleSetTurn('boss'); // 锁定按钮
+
+  // 记录消耗
+  if (actionKey !== 'weapon') BATTLE.usedActions.add(actionKey);
+
+  const dmg = Math.round(baseDmg * (minMult + Math.random()*(maxMult-minMult)));
+  BATTLE.bossHp -= dmg;
+
+  // 视觉反馈
+  spawnDmgFloat(dmg, '#ffda3a', true);
+  const icon = document.getElementById('battle-boss-icon');
+  icon.classList.add('hurt');
+  setTimeout(() => icon.classList.remove('hurt'), 500);
+
+  battleSetLog(`满满公主使出【${actionName}】！
+造成 ${dmg} 点伤害！⚔️`, '#ffeeaa');
+  battleUpdateHP();
+  battleRenderActions();
+
+  if (BATTLE.bossHp <= 0) {
+    BATTLE.bossHp = 0;
+    battleUpdateHP();
+    icon.classList.add('dead');
+    battleSetTurn('over');
+    battleSetLog('💥 地狱三角犬被击败了！独角兽重获自由！🦄✨', '#ffe066');
+    setTimeout(() => doBattleWin(), 1200);
+    return;
+  }
+
+  setTimeout(() => doBossAttack(), 1100);
+}
+
+/* ─── BOSS 反击 ─── */
+function doBossAttack() {
+  if (BATTLE.turn === 'over') return;
+
+  // BOSS 伤害被防御削减
+  const rawDmg = Math.round(BATTLE.bossHpMax * 0.09);
+  const reduced = Math.max(5, Math.round(rawDmg * 100 / (100 + BATTLE.baseDef)));
+  const dmg = Math.round(reduced * (0.8 + Math.random()*0.4));
+  BATTLE.prinHp -= dmg;
+
+  spawnDmgFloat(dmg, '#ff5fa0', false);
+
+  const phrases = [
+    '张开三张血盆大口猛扑过来', '喷出漆黑的地狱之焰',
+    '甩动巨爪横扫而来', '发出震天的恐怖嚎叫，令人胆寒',
+    '从地底升起的黑色触手缠绕而来',
+  ];
+  const phrase = phrases[Math.floor(Math.random()*phrases.length)];
+  battleSetLog(`👹 地狱三角犬${phrase}！
+满满公主受到 ${dmg} 点伤害！`, '#ffaaaa');
+  battleUpdateHP();
+
+  if (BATTLE.prinHp <= 0) {
+    BATTLE.prinHp = 0;
+    battleUpdateHP();
+    battleSetTurn('over');
+    battleSetLog('😢 满满公主力竭倒下……独角兽还在等待救援！再试一次！', '#ff9090');
+    setTimeout(() => doBattleLose(), 1000);
+    return;
+  }
+
+  battleSetTurn('player');
+  battleRenderActions();
+}
+
+/* ─── 战斗结束 ─── */
+function doBattleWin() {
+  CHALLENGE.realm = REALMS.find(r => r.id === 'r9');
+  showWinResult();
+}
+function doBattleLose() {
+  CHALLENGE.realm = REALMS.find(r => r.id === 'r9');
+  showFailResult();
+}
+
+/* ─── 退出 ─── */
+function confirmBattleQuit() {
+  document.getElementById('battle-quit-confirm').classList.add('show');
+}
+function doBattleQuit() {
+  document.getElementById('battle-quit-confirm').classList.remove('show');
+  showScreen('adventure');
+}
+
+/* ─── 伤害飘字 ─── */
+function spawnDmgFloat(dmg, color, isBoss) {
+  const el = document.createElement('div');
+  el.className = 'dmg-float';
+  el.textContent = `-${dmg}`;
+  el.style.color  = color;
+  el.style.textShadow = `0 0 12px ${color}`;
+  el.style.left   = (25 + Math.random()*50)+'%';
+  el.style.top    = isBoss ? '24%' : '58%';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1050);
+}
+
+/* ─── 背景粒子 ─── */
+function battleStartParticles() {
+  const c = document.getElementById('battle-particles');
+  if (!c) return;
+  c.width  = window.innerWidth;
+  c.height = window.innerHeight;
+  const ctx = c.getContext('2d');
+  const particles = Array.from({length:40}, () => ({
+    x: Math.random()*c.width, y: Math.random()*c.height,
+    r: Math.random()*2+0.5,
+    vx:(Math.random()-0.5)*0.4, vy:-Math.random()*0.6-0.2,
+    a: Math.random(),
+    color: ['#ef4444','#ff8c3a','#c85af5','#ff5fa0'][Math.floor(Math.random()*4)],
+  }));
+  function frame() {
+    if (!document.getElementById('screen-battle').classList.contains('active')) return;
+    ctx.clearRect(0,0,c.width,c.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.a -= 0.004;
+      if (p.y < -5 || p.a <= 0) {
+        p.y = c.height+5; p.x = Math.random()*c.width; p.a = Math.random()*0.6+0.3;
+      }
+      ctx.save();
+      ctx.globalAlpha = p.a;
+      ctx.fillStyle = p.color;
+      ctx.shadowBlur = 8; ctx.shadowColor = p.color;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    });
+    requestAnimationFrame(frame);
+  }
+  frame();
+}
+
 function startRealm(realm) {
+  if (realm.isHell) {
+    startBattle();
+    return;
+  }
   CHALLENGE.realm = realm;
   CHALLENGE.questions = buildQuestions(realm);
   CHALLENGE.currentQ = 0;
   CHALLENGE.answered = false;
-
-  // Set bg theme
   document.getElementById('challenge-bg').style.background = realm.grad;
-
   showScreen('challenge');
   renderChallengeQ();
 }
