@@ -1416,10 +1416,10 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
   transition:background 0.8s;
 }
 .challenge-header {
-  width:100%; padding:10px 14px 6px;
+  width:100%; padding:6px 14px 4px;
   display:flex; align-items:center; gap:9px;
   position:relative; z-index:2; flex-shrink:0;
-  margin-top:max(36px, env(safe-area-inset-top, 36px));
+  margin-top:env(safe-area-inset-top, 6px);
 }
 .chall-realm-name {
   font-family:var(--font-body); font-size:26px; font-weight:bold;
@@ -1677,7 +1677,48 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
 .picker-item .pi-name     { font-size: calc(13px * var(--scale)); }
 .picker-item .pi-sub      { font-size: calc(11px * var(--scale)); }
 
-/* ── 答题界面：微软雅黑/宋体，字号 ×1.3 ── */
+/* ── 答对弹窗 ── */
+.correct-popup-overlay {
+  position:absolute; inset:0; z-index:80;
+  background:rgba(61,42,94,0.45);
+  display:none; align-items:center; justify-content:center;
+  padding:24px;
+}
+.correct-popup-overlay.show { display:flex; animation:fadeIn 0.2s ease; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.correct-popup-card {
+  background:linear-gradient(160deg,#f0fff8,#e8f5ff);
+  border:4px solid var(--outline);
+  border-radius:var(--r-xl);
+  padding:28px 24px 22px;
+  width:100%; max-width:320px;
+  text-align:center;
+  box-shadow:6px 6px 0 var(--outline);
+  animation:correctPopIn 0.4s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes correctPopIn {
+  from{opacity:0;transform:scale(0.75) rotate(-4deg)}
+  to  {opacity:1;transform:scale(1)    rotate(0deg)}
+}
+.correct-popup-star  { font-size:calc(72px * var(--scale)); line-height:1; display:block; margin-bottom:8px; animation:starSpin 0.6s ease-out; }
+@keyframes starSpin  { from{transform:rotate(-180deg) scale(0)} to{transform:rotate(0deg) scale(1)} }
+.correct-popup-msg {
+  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  font-size:calc(20px * var(--scale));
+  color:var(--c-text); line-height:1.7;
+  margin-bottom:18px;
+  background:#fff; border:2px solid rgba(61,42,94,0.12);
+  border-radius:var(--r-md); padding:10px 12px;
+}
+.correct-popup-btn {
+  width:100%; padding:calc(11px * var(--scale)) 0;
+  background:linear-gradient(135deg,#3cdb7a,#1ecfbe);
+  border:3px solid var(--outline); border-radius:var(--r-lg);
+  color:#fff; font-size:calc(19px * var(--scale)); font-weight:bold;
+  box-shadow:3px 3px 0 var(--outline);
+  letter-spacing:1px; transition:all 0.15s;
+}
+.correct-popup-btn:active { transform:translate(2px,2px); box-shadow:1px 1px 0 var(--outline); }
 .chall-realm-name         { font-size: calc(16px * var(--scale)); }
 .timer-text               { font-size: calc(17px * var(--scale)); }
 
@@ -2148,6 +2189,15 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
     </div>
   </div>
   <div class="challenge-body" id="challenge-body"></div>
+
+  <!-- 答对弹窗 -->
+  <div class="correct-popup-overlay" id="correct-popup">
+    <div class="correct-popup-card">
+      <span class="correct-popup-star">⭐</span>
+      <div class="correct-popup-msg" id="correct-popup-msg"></div>
+      <button class="correct-popup-btn" id="correct-popup-btn" onclick="closeCorrectPopup()">继续 →</button>
+    </div>
+  </div>
 </div>
 
 <!-- ================================================
@@ -4328,13 +4378,12 @@ function pickAnswer(idx) {
     CHALLENGE.answered = true;
     btn.className = 'opt-btn correct';
     document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
-    const fb = document.getElementById('q-feedback');
-    fb.className = 'q-feedback ok show';
-    fb.textContent = q.ok;
     spawnMiniConfetti();
-    setTimeout(() => {
-      document.getElementById('next-q-btn').className = 'next-q-btn show';
-    }, 500);
+    // 弹出居中答对弹窗
+    const isLast = CHALLENGE.currentQ >= CHALLENGE.questions.length - 1;
+    document.getElementById('correct-popup-msg').textContent = q.ok;
+    document.getElementById('correct-popup-btn').textContent = isLast ? '完成挑战 🏆' : '继续 →';
+    document.getElementById('correct-popup').classList.add('show');
   } else {
     if (!CHALLENGE.wrongOnThisQ) {
       // 第一次答错：只说再想想，不暴露答案
@@ -4368,6 +4417,11 @@ function handleWrongAnswer(msg) {
   fb.className = 'q-feedback no show';
   fb.textContent = msg;
   setTimeout(() => showFailResult(), 1200);
+}
+
+function closeCorrectPopup() {
+  document.getElementById('correct-popup').classList.remove('show');
+  nextQ();
 }
 
 function nextQ() {
