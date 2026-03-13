@@ -236,21 +236,28 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
 .story-btn {
   width:80%; margin-top:16px;
   padding:16px 0;
-  background:linear-gradient(160deg,#3ab0ff,#c85af5);
+  background:linear-gradient(160deg,#ff5fa0,#c85af5);
   border:3px solid var(--outline);
   border-radius:var(--r-pill);
   font-family:var(--font-title);
   font-size:clamp(36px,5vw,44px);
   color:#fff; letter-spacing:2px;
-  box-shadow:5px 5px 0 var(--outline), 0 0 24px rgba(58,176,255,0.4);
+  box-shadow:5px 5px 0 var(--outline), 0 0 24px rgba(255,95,160,0.4);
   transition:all 0.15s cubic-bezier(.34,1.56,.64,1);
   animation:storyBtnPop 2s ease-in-out infinite alternate;
 }
 @keyframes storyBtnPop {
   from { transform:scale(1) rotate(0.5deg); box-shadow:5px 5px 0 var(--outline); }
-  to   { transform:scale(1.03) rotate(-0.5deg); box-shadow:7px 7px 0 #2a1a5e; }
+  to   { transform:scale(1.03) rotate(-0.5deg); box-shadow:7px 7px 0 #7a2ab5; }
 }
 .story-btn:active { transform:scale(0.96) translate(3px,3px); box-shadow:2px 2px 0 var(--outline); }
+.skip-hint {
+  margin-top:14px; font-size:clamp(22px,3vw,28px);
+  color:rgba(61,42,94,0.45); cursor:pointer;
+  text-decoration:underline dotted;
+  transition:color 0.15s;
+}
+.skip-hint:hover { color:rgba(61,42,94,0.7); }
 
 /* ============================================================
    INTRO — sequential comic modals
@@ -1836,8 +1843,8 @@ button { font-family: var(--font-body); cursor:pointer; border:none; background:
 ================================================ -->
 <div id="screen-intro" class="screen active">
   <div class="intro-title" style="margin-bottom:18px">满满公主<br>独角兽拯救记</div>
-  <button class="start-btn" onclick="startGame()">✨ 开始冒险！</button>
   <button class="story-btn" onclick="showComicPanel(0)">📖 查看故事</button>
+  <div class="skip-hint" onclick="startGame()">跳过故事，直接进入 →</div>
 </div>
 
 <!-- 漫画弹出面板 (逐个显示) -->
